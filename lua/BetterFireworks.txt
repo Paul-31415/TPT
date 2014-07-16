@@ -1,0 +1,595 @@
+ -- firw = 69, fwrk = 98 embr = 147  use tmp2
+-- dcolor : 0xAARRGGBB 
+require 'socket'
+tpt.setfpscap(1024)
+
+EMBR = 147
+T = 0
+traildata = {}
+cake = false
+
+function scolor(x,y,vx,vy,life,temp,tmp,tmp2,dcolor,mode,ptype,func,args2)
+  if ptype == 0 then  ptype = 147  end
+  i = sim.partCreate(mode,x,y,ptype)
+  if i >=0 then
+    sim.partProperty(i,simulation.FIELD_DCOLOUR,dcolor)
+    sim.partProperty(i,simulation.FIELD_TEMP,temp)
+    sim.partProperty(i,simulation.FIELD_VY,vy)
+    sim.partProperty(i,simulation.FIELD_TMP2,tmp2)
+    sim.partProperty(i,simulation.FIELD_TMP,tmp)
+    sim.partProperty(i,simulation.FIELD_VX,vx)
+    sim.partProperty(i,simulation.FIELD_LIFE,life)
+    if type(func) == 'function' then  func(i,args2)  end
+    return i
+  else
+    return i
+  end
+end
+
+function keys(a,b,c,d)
+  keydata = {a,b,c,d}
+  keyset = 1
+end
+tpt.register_keypress(keys)
+
+function Time()
+  if #traildata > 0 then -- tpt.log("ifTrue!")
+    local o = 0
+    for k, o in ipairs(traildata) do-- tpt.log("FOR True!") -- use pairs()
+      local die = true
+      if traildata[k] == nil then else
+       if traildata[k][16] > #traildata[k][2] then else  die = false  end
+       if die then  table.remove(traildata,k)  end
+       if traildata[k][16] == nil or traildata[k][16] < 1 then  traildata[k][16] = 1  end
+      --function trailtime()
+       if (tpt.set_pause() == 0 or (keydata[1] == 'f' and keydata[4] ==2)) and traildata[k] ~= nil then --tpt.log("2ifTrue!:"..tostring(#traildata)..tostring(die))
+         traildata[k][15] = traildata[k][15] + 1
+         --print(#traildata,traildata[k],traildata[k][15],traildata[k][2][traildata[k][16]],traildata[k][16],die)
+         while 0 == traildata[k][2][traildata[k][16]] do  --tpt.log("3ifTrue!")
+           traildata[k][15] = 0
+           local life = sim.partProperty(traildata[k][1],simulation.FIELD_LIFE)
+           local x,y = sim.partPosition(traildata[k][1])
+           local nsubject = scolor(x,y,traildata[k][3][traildata[k][16]],traildata[k][4][traildata[k][16]],traildata[k][5][traildata[k][16]],traildata[k][7][traildata[k][16]],traildata[k][8][traildata[k][16]],traildata[k][9][traildata[k][16]],traildata[k][6][traildata[k][16]],-3,traildata[k][10][traildata[k][16]],traildata[k][12][traildata[k][16]],traildata[k][1])
+           traildata[k][16] = traildata[k][16] + 1 --****** 
+           if traildata[k][11] == 2 then  traildata[k][1] = nsubject  end
+           if traildata[k][11] == 3 then  sim.partKill(traildata[k][1])  traildata[k][1] = nsubject  end
+         end
+         if traildata[k][15] >= traildata[k][2][traildata[k][16]] then  --tpt.log("3ifTrue!")
+           traildata[k][15] = 0
+           local life = sim.partProperty(traildata[k][1],simulation.FIELD_LIFE)
+           local x,y = sim.partPosition(traildata[k][1])
+           local nsubject = scolor(x,y,traildata[k][3][traildata[k][16]],traildata[k][4][traildata[k][16]],traildata[k][5][traildata[k][16]],traildata[k][7][traildata[k][16]],traildata[k][8][traildata[k][16]],traildata[k][9][traildata[k][16]],traildata[k][6][traildata[k][16]],-3,traildata[k][10][traildata[k][16]],traildata[k][12][traildata[k][16]],traildata[k][1])
+           traildata[k][16] = traildata[k][16] + 1 --****** 
+           if traildata[k][11] == 2 then  traildata[k][1] = nsubject  end
+           if traildata[k][11] == 3 then  sim.partKill(traildata[k][1])  traildata[k][1] = nsubject  end
+         end  --tpt.log("c"..tostring(traildata[k][16]).."  1:"..tostring(#(traildata[k][2])).." t:"..tostring(traildata[k][15])..' d:'..tostring(traildata[k][2][traildata[k][16]]))
+         if traildata[k][16] > #traildata[k][2] then  die = true  end --print('die:true')  end
+         --tpt.log("1:"..tostring(#traildata)..tostring(die))
+         if life == 1 and traildata[k][11] == 1 then
+           local c = traildata[k][16]
+           for c = c, #traildata[k][2] + 1 , 1 do
+             traildata[k][16] = c
+             scolor(x,y,traildata[k][3][traildata[k][16]],traildata[k][4][traildata[k][16]],traildata[k][5][traildata[k][16]],traildata[k][7][traildata[k][16]],traildata[k][8][traildata[k][16]],traildata[k][9][traildata[k][16]],traildata[k][6][traildata[k][16]],-3,traildata[k][10][traildata[k][16]],traildata[k][12][traildata[k][16]],traildata[k][1])
+           end
+           die = true
+         end
+         --tpt.log("2:"..tostring(#traildata)..tostring(die))
+         if traildata[k][16] == ((#traildata[k][2]) + 1) or (life == 1 and traildata[k][11] == 0) then
+           if traildata[k][11] == 1 then  sim.partKill(traildata[k][1])  end
+           die = true
+         end 
+         --tpt.log("3:"..tostring(#traildata)..tostring(die))
+         local ptype = sim.partProperty(traildata[k][1],sim.FIELD_TYPE)
+         if ptype ~= traildata[k][14] then  die = true  end
+         if type(traildata[k][13]) == 'function' then  traildata[k][13](traildata[k][1])  end
+         --tpt.log("4:"..tostring(#traildata)..tostring(die))
+       end 
+       if die or traildata[k][2][traildata[k][16]] == nil then  table.remove(traildata,k)  end
+      end
+       --tpt.log("5:"..tostring(#traildata)..tostring(die))
+      --end
+    end
+  end
+  T = T + 1
+  -- key reset
+  if keyset == 1 then
+    keyset = 0
+  else
+    keydata = {nil,nil,nil,nil}
+  end
+end
+tpt.register_step(Time)
+
+
+function trail(subject,delay,pvx,pvy,plife,pdcolor,ptemp,ptmp,ptmp2,ptype,del,pfunc,func,type,t,c)
+  local args = {subject,delay,pvx,pvy,plife,pdcolor,ptemp,ptmp,ptmp2,ptype,del,pfunc,func,type,t,c}
+  table.insert(traildata,args)
+end
+
+function inta(num)
+  if num ~= nil then
+    if math.random() < (num - math.floor(num)) then
+      return math.ceil(num)
+    else
+      return math.floor(num)
+    end
+  else
+    return nil
+  end
+end
+
+function dist(x1,y1,z1,x2,y2,z2)
+  local xd = x2-x1
+  local yd = y2-y1
+  local zd = z2-z1
+  local Distance = (xd*xd + yd*yd + zd*zd)^(0.5)
+  return Distance  
+end
+
+function posphere(num,iter)
+  local x = math.random() * 2 - 1
+  local y = math.random() * 2 - 1
+  local z = math.random() * 2 - 1
+  local lx = {}
+  local ly = {}
+  local lz = {}
+  local c = 1
+  while c < num do -- sphere mathz
+    if (x * x) + (y * y) + (z * z) > 1 then 
+      x = math.random() * 2 - 1
+      y = math.random() * 2 - 1
+      z = math.random() * 2 - 1
+      c = c
+    else
+      local p = (1/(x*x+y*y+z*z))^(0.5)
+      lx[c] = p * x
+      ly[c] = p * y
+      lz[c] = p * z
+      x = math.random() * 2 - 1
+      y = math.random() * 2 - 1
+      z = math.random() * 2 - 1
+      c = c + 1
+    end
+  end
+  
+  local c2 = 0
+  local c3 = 0
+  for c = 0 , iter , 1 do -- repultion mathz
+    for c2 = 0 , #lx , 1 do
+      
+    end
+    
+    
+    
+  end
+  return lx,ly,lz
+end
+
+
+-- firework booms (vars:x,y,color/preset,life,lifer,size,[rotx,roty,rotz],special...) ___________________________________________________________________________
+
+function boom_tptdefault(color,life,lifer,size)
+  if color == 0 then 
+
+
+  end
+end
+
+function boom_willow(x,y,color,life,size,count,trailcount,weight)
+  if color == 0 then  color = 0xFFA8A8B0  elseif color == 1 then  color = 0xFFD9A441  elseif color == 2 then  color = 0xFF0088FF  elseif color == 3 then  color = 0xFF8800FF  elseif color == -1 then  color = 0xFFFF8800  end
+  if count == 0 then  count = 64  end
+  if trailcount == 0 then  trailcount = 64  end
+  local vx = math.random() * 2 - 1
+  local vy = math.random() * 2 - 1
+  local vz = math.random() * 2 - 1
+  local lvx = {}
+  local lvy = {}
+  local c = 1
+  while c < count do -- sphere mathz
+    if (vx * vx) + (vy * vy) + (vz * vz) > 1 then 
+      vx = math.random() * 2 - 1
+      vy = math.random() * 2 - 1
+      vz = math.random() * 2 - 1
+      c = c
+    else
+      local p = (1/(vx*vx+vy*vy+vz*vz))^(0.5)
+      lvx[c] = p * vx * size
+      lvy[c] = p * vy * size
+      vx = math.random() * 2 - 1
+      vy = math.random() * 2 - 1
+      vz = math.random() * 2 - 1
+      c = c + 1
+    end
+  end
+  local delay = {}
+  local pvx = {}
+  local pvy = {}
+  local plife = {}
+  local pdcolor = {}
+  local ptemp = {}
+  local ptmp = {}
+  local ptmp2 = {}
+  local ptype = {}
+  local pfunc = {}
+  for c = 1 , trailcount , 1 do
+    table.insert(delay,inta(life/trailcount))
+    table.insert(pvx,math.random()*2 - 1)
+    table.insert(pvy,math.random()*2 - 1)
+    table.insert(plife,inta(life))
+    table.insert(pdcolor,color)
+    table.insert(ptemp,5750 + math.random(500))
+    table.insert(ptmp,3)
+    table.insert(ptmp2,0x00000080)
+    table.insert(ptype,147)
+    table.insert(pfunc,0)
+  end
+  function willowgrav(i)
+    local x,y = sim.partPosition(i)
+    if x == nil then else
+      local gx = (306 - x)
+      local gy = (192 - y)
+      if sim.gravityMode() == 0 then
+        sim.partProperty(i,simulation.FIELD_VY,    sim.partProperty(i,simulation.FIELD_VY) + (weight))
+      elseif sim.gravityMode() == 2 and (gx ~= 0 or gy ~= 0) then -- 306,192
+        gx = gx / ((gx^2) + (gy^2))^0.5
+        gy = gy / ((gx^2) + (gy^2))^0.5
+        sim.partProperty(i,simulation.FIELD_VX,    sim.partProperty(i,simulation.FIELD_VX) + (weight * gx))
+        sim.partProperty(i,simulation.FIELD_VY,    sim.partProperty(i,simulation.FIELD_VY) + (weight * gx))
+      end
+    end
+  end
+  function willowtrail(i)
+    trail(i,delay,pvx,pvy,plife,pdcolor,ptemp,ptmp,ptmp2,ptype,1,pfunc,willowgrav,147,0,0)
+  end
+  for c = 1 , count , 1 do
+    scolor(x,y,lvx[c],lvy[c],life,5750 + math.random(500),1,0x00000001 + math.random(1,2) * 0x20,color,-3,147,willowtrail)
+  end
+end
+
+
+function boom_trail(x,y,vx,vy,color,colorb,life,tlife,spread,trailcount,vvx,vvy,funcend,args3)
+  function trailgrav(i)
+    local x,y = sim.partPosition(i)
+    if x == nil then else
+      sim.partProperty(i,simulation.FIELD_VX,    sim.partProperty(i,simulation.FIELD_VX) + (vvx))
+      sim.partProperty(i,simulation.FIELD_VY,    sim.partProperty(i,simulation.FIELD_VY) + (vvy))
+      if sim.partProperty(i,simulation.FIELD_LIFE) == 1 and type(funcend) == 'function' then
+        funcend(x,y,args3)
+      end
+    end
+  end
+  function trailprand(i)
+    sim.partProperty(i,simulation.FIELD_VX,    sim.partProperty(i,simulation.FIELD_VX) + (math.random()*spread - spread/2))
+    sim.partProperty(i,simulation.FIELD_VY,    sim.partProperty(i,simulation.FIELD_VY) + (math.random()*spread - spread/2))
+  end
+  local c = 0
+  local delay = {}
+  local pvx = {}
+  local pvy = {}
+  local plife = {}
+  local pdcolor = {}
+  local ptemp = {}
+  local ptmp = {}
+  local ptmp2 = {}
+  local ptype = {}
+  local pfunc = {}
+  for c = 1 , trailcount , 1 do
+    table.insert(delay,inta(life/trailcount))
+    table.insert(pvx,0)
+    table.insert(pvy,0)
+    table.insert(plife,inta(tlife))
+    table.insert(pdcolor,colorb)
+    table.insert(ptemp,5750 + math.random(500))
+    table.insert(ptmp,1)
+    table.insert(ptmp2,0x00000088)
+    table.insert(ptype,147)
+    table.insert(pfunc,trailprand)
+  end
+  function trailtrail(i)
+    trail(i,delay,pvx,pvy,plife,pdcolor,ptemp,ptmp,ptmp2,ptype,1,pfunc,trailgrav,147,0,0)
+  end
+  scolor(x,y,vx,vy,life,5750 + math.random(500),3,0x00000001 + math.random(1,2) * 0x20,color,-3,147,trailtrail)
+end
+
+function boom_sparkle(x,y,color,spcolor,life,splife,slife,size,count,scount,sparkprob,spread,weight)
+  function sparkleprand(i)
+    sim.partProperty(i,simulation.FIELD_VX,    sim.partProperty(i,simulation.FIELD_VX) + (math.random()*spread - spread/2))
+    sim.partProperty(i,simulation.FIELD_VY,    sim.partProperty(i,simulation.FIELD_VY) + (math.random()*spread - spread/2))
+    if math.random(0,sparkprob) == 0 then  sim.partProperty(i,simulation.FIELD_DCOLOUR,spcolor)  end
+    if math.random(0,splife) == 0 then  sim.partKill(i)  end
+  end
+  local c = 0
+  local delay = {}
+  local pvx = {}
+  local pvy = {}
+  local plife = {}
+  local pdcolor = {}
+  local ptemp = {}
+  local ptmp = {}
+  local ptmp2 = {}
+  local ptype = {}
+  local pfunc = {}
+  for c = 1 , inta(splife/2) , 1 do
+    table.insert(delay,inta(1))
+    table.insert(pvx,0)
+    table.insert(pvy,0)
+    table.insert(plife,inta(slife))
+    table.insert(pdcolor,0xFF000000)
+    table.insert(ptemp,5750 + math.random(500))
+    table.insert(ptmp,1)
+    table.insert(ptmp2,0x00000088)
+    table.insert(ptype,147)
+    table.insert(pfunc,sparkleprand)
+
+    table.insert(delay,inta(1))
+    table.insert(pvx,0)
+    table.insert(pvy,0)
+    table.insert(plife,inta(slife))
+    table.insert(pdcolor,0xFF000000)
+    table.insert(ptemp,5750 + math.random(500))
+    table.insert(ptmp,1)
+    table.insert(ptmp2,0x00000088)
+    table.insert(ptype,147)
+    table.insert(pfunc,sparkleprand)
+    
+  end
+  function sparkletrailtrail(i)
+    trail(i,delay,pvx,pvy,plife,pdcolor,ptemp,ptmp,ptmp2,ptype,3,pfunc,0,147,0,0)
+  end
+  local c = 0
+  local delay = {}
+  local pvx = {}
+  local pvy = {}
+  local plife = {}
+  local pdcolor = {}
+  local ptemp = {}
+  local ptmp = {}
+  local ptmp2 = {}
+  local ptype = {}
+  local pfunc = {}
+  for c = 1 , scount , 1 do
+    table.insert(delay,inta(scount/life))
+    table.insert(pvx,0)
+    table.insert(pvy,0)
+    table.insert(plife,inta(slife))
+    table.insert(pdcolor,0xFF000000)
+    table.insert(ptemp,5750 + math.random(500))
+    table.insert(ptmp,0)
+    table.insert(ptmp2,0x00000088)
+    table.insert(ptype,147)
+    table.insert(pfunc,sparkletrailtrail)
+  end
+  function sparkletrail(i)
+    trail(i,delay,pvx,pvy,plife,pdcolor,ptemp,ptmp,ptmp2,ptype,0,pfunc,sparklegrav,147,0,0)
+  end
+  local vx = math.random() * 2 - 1
+  local vy = math.random() * 2 - 1
+  local vz = math.random() * 2 - 1
+  local lvx = {}
+  local lvy = {}
+  local c = 1
+  while c < count do -- sphere mathz
+    if (vx * vx) + (vy * vy) + (vz * vz) > 1 then 
+      vx = math.random() * 2 - 1
+      vy = math.random() * 2 - 1
+      vz = math.random() * 2 - 1
+      c = c
+    else
+      local p = (1/(vx*vx+vy*vy+vz*vz))^(0.5)
+      lvx[c] = p * vx * size
+      lvy[c] = p * vy * size
+      vx = math.random() * 2 - 1
+      vy = math.random() * 2 - 1
+      vz = math.random() * 2 - 1
+      c = c + 1
+    end
+  end
+
+  function sparklegrav(i)
+    local x,y = sim.partPosition(i)
+    if x == nil then else
+      local gx = (306 - x)
+      local gy = (192 - y)
+      if sim.gravityMode() == 0 then
+        sim.partProperty(i,simulation.FIELD_VY,    sim.partProperty(i,simulation.FIELD_VY) + (weight))
+      elseif sim.gravityMode() == 2 and (gx ~= 0 or gy ~= 0) then -- 306,192
+        gx = gx / ((gx^2) + (gy^2))^0.5
+        gy = gy / ((gx^2) + (gy^2))^0.5
+        sim.partProperty(i,simulation.FIELD_VX,    sim.partProperty(i,simulation.FIELD_VX) + (weight * gx))
+        sim.partProperty(i,simulation.FIELD_VY,    sim.partProperty(i,simulation.FIELD_VY) + (weight * gx))
+      end
+    end
+  end
+
+  for c = 1 , count , 1 do
+    scolor(x,y,lvx[c],lvy[c],life,5750 + math.random(500),1,0x00000001 + math.random(1,2) * 0x20,color,-3,147, sparkletrail)
+  end
+end
+
+function boom_moonfish(x,y,color,spcolor,life,tlife,size,tsize,tspread,count,scount,speed,randspeed) --324
+  function moonfishtrailvel(i,pi)
+    local vx
+    local vy
+    local pvx = sim.partProperty(pi,simulation.FIELD_VX)
+    local pvy = sim.partProperty(pi,simulation.FIELD_VY)
+    if (pvx ~= 0 or pvy ~= 0) and pvx ~= nil and pvy ~= nil then
+      vx = (1/(pvx*pvx+pvy*pvy))^0.5 * pvx * tsize + (math.random()*tspread - tspread/2)
+      vy = (1/(pvx*pvx+pvy*pvy))^0.5 * pvy * tsize + (math.random()*tspread - tspread/2)
+    end
+    if math.random() > 0.5 and vx ~= nil and vy ~= nil then
+      sim.partProperty(i,simulation.FIELD_VX,0-vy)
+      sim.partProperty(i,simulation.FIELD_VY,vx)
+    elseif vx ~= nil and vy ~= nil then
+      sim.partProperty(i,simulation.FIELD_VX,vy)
+      sim.partProperty(i,simulation.FIELD_VY,0-vx)
+    end
+  end
+
+  function moonfishvel(pi,pvvx,pvvy)
+    if pvvx == nil then  pvvx = math.random()*speed - speed/2  end
+    if pvvy == nil then  pvvy = math.random()*speed - speed/2  end
+    if math.random(0,randspeed) == 0 then
+      pvvx = math.random()*speed - speed/2
+      pvvy = math.random()*speed - speed/2
+    end
+    if pi ~= nil and pvvx ~= nil and pvvy ~= nil and sim.partProperty(pi,simulation.FIELD_VX) ~= nil and sim.partProperty(pi,simulation.FIELD_VY) ~= nil then
+      sim.partProperty(pi,simulation.FIELD_VX,sim.partProperty(pi,simulation.FIELD_VX)+pvvx)
+      sim.partProperty(pi,simulation.FIELD_VY,sim.partProperty(pi,simulation.FIELD_VY)+pvvy)
+    end
+  end
+  local c = 0
+  local delay = {}
+  local pvx = {}
+  local pvy = {}
+  local plife = {}
+  local pdcolor = {}
+  local ptemp = {}
+  local ptmp = {}
+  local ptmp2 = {}
+  local ptype = {}
+  local pfunc = {}
+  for c = 1 , inta(scount) , 1 do
+    table.insert(delay,inta(life/scount))
+    table.insert(pvx,0)
+    table.insert(pvy,0)
+    table.insert(plife,inta(tlife))
+    table.insert(pdcolor,spcolor)
+    table.insert(ptemp,5750 + math.random(500))
+    table.insert(ptmp,1)
+    table.insert(ptmp2,0x00000088)
+    table.insert(ptype,147)
+    table.insert(pfunc,moonfishtrailvel)
+  end
+  function moonfishtrail(i)
+    trail(i,delay,pvx,pvy,plife,pdcolor,ptemp,ptmp,ptmp2,ptype,0,pfunc,moonfishvel,147,0,0)
+  end
+  local vx = math.random() * 2 - 1
+  local vy = math.random() * 2 - 1
+  local vz = math.random() * 2 - 1
+  local lvx = {}
+  local lvy = {}
+  local c = 1
+  while c < count do -- sphere mathz
+    if (vx * vx) + (vy * vy) + (vz * vz) > 1 then 
+      vx = math.random() * 2 - 1
+      vy = math.random() * 2 - 1
+      vz = math.random() * 2 - 1
+      c = c
+    else
+      local p = (1/(vx*vx+vy*vy+vz*vz))^(0.5)
+      lvx[c] = p * vx * size
+      lvy[c] = p * vy * size
+      vx = math.random() * 2 - 1
+      vy = math.random() * 2 - 1
+      vz = math.random() * 2 - 1
+      c = c + 1
+    end
+  end
+
+  for c = 1 , count , 1 do
+    scolor(x,y,lvx[c],lvy[c],life,5750 + math.random(500),0,0x00000001 + math.random(1,2) * 0x20,color,-3,147, moonfishtrail)
+  end
+
+end
+
+
+function boom_crosset(x,y,count,size,color,colorb,life,tlife,spread,trailcount,vspread,funcend) -- error __ not detonating t3 at all ends
+  function crossetiter(cx,cy,I)
+    if I <= #count then
+      local c
+      for c = 1 , count[I] , 1 do
+        boom_trail(cx,cy,math.random()*vspread[I]-vspread[I]/2*size[I],math.random()*vspread[I]-vspread[I]/2*size[I],color[I],colorb[I],life[I],tlife[I],spread[I],trailcount[I],math.random()*vspread[I]-vspread[I]/2,math.random()*vspread[I]-vspread[I]/2,crossetiter,I+1)
+      end
+    elseif type(funcend) == 'function' then
+      funcend(x,y)
+    end
+  end
+  crossetiter(x,y,1)
+end
+
+
+
+-- firework composite functions (i,x,y,vx,vy)_____________________________________________________________________________________________________________________________________________
+
+
+
+-- firework assigners ____________________________________________________________________________________________________________________________________________________________________
+
+
+
+function ignition(i,x,y)
+  local tmp2 = sim.partProperty(i,simulation.FIELD_TMP2)
+  local fvel = {}
+  local flife = {}
+  while #flife > #fvel do  table.insert(flife,0)  end
+  if tmp2 == 0 then  tmp2 = math.random(1,#fvel)  end
+  if tmp2 >= #fvel then  sim.partProperty(i,simulation.FIELD_VX,sim.partProperty(i,simulation.FIELD_VX)*fvel[tmp2])  sim.partProperty(i,simulation.FIELD_VY,sim.partProperty(i,simulation.FIELD_VY)*fvel[tmp2])  sim.partProperty(i,simulation.FIELD_LIFE,flife[tmp2])  end
+end
+
+--tpt.register_ignition(ignition)
+
+function detonation(i,x,y)
+  local tmp2 = sim.partProperty(i,simulation.FIELD_TMP2)
+  local vx = sim.partProperty(i,simulation.FIELD_VX)
+  local vy = sim.partProperty(i,simulation.FIELD_VY)
+  local ffunc = {}
+  ffunc[tmp2](i,x,y,vx,vy)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
