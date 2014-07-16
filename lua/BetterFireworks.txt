@@ -176,6 +176,7 @@ function boom_tptdefault(color,life,lifer,size)
 end
 
 function boom_willow(x,y,color,life,size,count,trailcount,weight)
+  if x == nil and y == nil and color == nil and life == nil and size == nil and count == nil and trailcount == nil and weight == nil then  print('(x pos , y pos , color (0xAARRGGBB) , life in frames of particles , size factor , # of particles , # of trail particles per particle , Acceleration (per frame) of non trail particles downwards)')  else
   if color == 0 then  color = 0xFFA8A8B0  elseif color == 1 then  color = 0xFFD9A441  elseif color == 2 then  color = 0xFF0088FF  elseif color == 3 then  color = 0xFF8800FF  elseif color == -1 then  color = 0xFFFF8800  end
   if count == 0 then  count = 64  end
   if trailcount == 0 then  trailcount = 64  end
@@ -289,6 +290,7 @@ function boom_trail(x,y,vx,vy,color,colorb,life,tlife,spread,trailcount,vvx,vvy,
     trail(i,delay,pvx,pvy,plife,pdcolor,ptemp,ptmp,ptmp2,ptype,1,pfunc,trailgrav,147,0,0)
   end
   scolor(x,y,vx,vy,life,5750 + math.random(500),3,0x00000001 + math.random(1,2) * 0x20,color,-3,147,trailtrail)
+ end -- if at func line 1
 end
 
 function boom_sparkle(x,y,color,spcolor,life,splife,slife,size,count,scount,sparkprob,spread,weight)
